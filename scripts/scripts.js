@@ -218,7 +218,7 @@
       //       <img src="" alt="" />
       //       <img src="" alt="" />
         // </div>
-        frag += '<div class="game__card" data-id="' + v.id + '"><img class="game__card-front" src="' + v.img + '" alt="' + v.name + '" /><img class="game__card-back" src="../images/overlay-cards.jpg" alt="Codepen" /></div>';
+        frag += '<div class="game__card" data-id="' + v.id + '"><img class="game__card-front" src="' + v.img + '" alt="' + v.name + '" /><img class="game__card-back" src="./images/overlay-cards.jpg" alt="Codepen" /></div>';
       })
 
       return frag ;
