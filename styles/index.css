@@ -2,6 +2,42 @@
 @import url(../vendor/fonts/fonts.css);
 @import url(../vendor/variables.css);
 
+@keyframes matchAnim {
+  0% {
+    background: linear-gradient(white, rgb(169, 233, 238));
+  }
+  10% {
+    background: linear-gradient(white, #bfdecd);
+  }
+  20% {
+    background: linear-gradient(white, #b2e2c7);
+  }
+  30% {
+    background: linear-gradient(white, #9fe6bf);
+  }
+  40% {
+    background: linear-gradient(white, #83ecb2);
+  }
+  50% {
+    background: linear-gradient(white, #7aefae);
+  }
+  60% {
+    background: linear-gradient(white, #83ecb2);
+  }
+  70% {
+    background: linear-gradient(white, #9fe6bf);
+  }
+  80% {
+    background: linear-gradient(white, #b2e2c7);
+  }
+  90% {
+    background: linear-gradient(white, #bfdecd);
+  }
+  100% {
+    background: linear-gradient(white, rgb(169, 233, 238));
+  }
+}
+
 /* основной блок body */
 .body {
   display: flex;
@@ -85,9 +121,16 @@
   /* необходимо, чтобы срабатывал эффект backface-visibility */
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
-  -webkit-transition: .4s linear;
-  -o-transition: .4s linear;
-  transition: .4s linear;
+  -webkit-transition: transform 0.4s linear;
+  -o-transition: transform 0.4s linear;
+  transition: transform 0.4s linear;
+}
+
+.game__card.matched {
+  -webkit-animation: 1s matchAnim ease-in-out;
+  animation: 1s matchAnim ease-in-out;
+  -webkit-animation-delay: 0.4s;
+  animation-delay: 0.4s;
 }
 
 .game__card.picked,
@@ -102,7 +145,6 @@
   /* обеспечивает невидимость обложки */
   /* без этого свойства rotate будет работать относительно как зеркало, а не реальный поворот */
   backface-visibility: hidden;
-  display: block;
 }
 
 .game__card-front {
@@ -142,22 +184,15 @@
   background: white;
   max-width: 600px;
   max-height: 360px;
-
   /* отступы для внутренней геометрии */
   padding: 50px;
-
-  /* выравнивание */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 40px;
 
   /* скрыть окно до конца игры */
   display: none;
 
   /* закруглить окно */
   border-radius: 2%;
+  text-align: center;
 }
 
 /* затемнение */
@@ -184,7 +219,7 @@
 
 /* кнопка рестарта */
 .game__restart {
-  margin: 0 auto;
+  margin: 40px auto 0;
   padding: 20px 30px;
 
   border: 3px solid #222;
