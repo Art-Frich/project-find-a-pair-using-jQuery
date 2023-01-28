@@ -1,56 +1,136 @@
 @import url(../vendor/normalize.css);
 @import url(../vendor/fonts/fonts.css);
-
-/* блок html */
-.page {
-  height: 100%;
-}
+@import url(../vendor/variables.css);
 
 /* основной блок body */
 .body {
-  /* центрируем содержимое */
   display: flex;
   flex-direction: column;
-  justify-content:center;
-  align-items: center;
-  gap: 48px;
+  gap: 42px;
 
   /* какие-то размеры, чтобы браузер мог отрисовывать от них */
-  height: 100vh;
   max-width: 1280px;
-  min-height: 500px;
-  margin: 50px auto;
+  margin: 3% auto;
 
   /* общие стили для содержимого */
   background: black;
   color: white;
-  font-family: 'Caveat', 'Arial', sans-serif;
+  font-family: "Caveat", "Arial", sans-serif;
+}
+
+/* блок с игрой и поздравлением */
+.game {
+  /* для самого маленького разрешения */
+  min-width: 320px;
+  width: 100%;
+
+  /* для центрирования окна с поздравлением */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
 }
 
 /* Заголовок странички h1 */
-.title {
+.game__title {
   margin: 0;
+  text-align: center;
+
   font-size: 70px;
   font-style: italic;
+}
+
+.game__window {
+  /* размеры с учетом декоративных оступов по бокам */
+  margin: 0 50px;
+  height: 100%;
+  width: calc(100% - 2 * 50px);
+
+  /* используем гриды для построения сетки карточек */
+  display: grid;
+  justify-content: center;
+  gap: 3vw;
+  grid-template-columns: repeat(auto-fit, minmax(120px, max-content));
+
+  /* эффект трехмерности */
+  /* cвойство говорит, что дочерние элементы могут быть в плоскости отлично от родительской */
+  transform-style: preserve-3d;
+  /* удаленность плоскости от пользователя */
+  perspective: 500px;
+}
+
+.game__card {
+  position: relative;
+  padding: 10px;
+
+  display: block;
+  transform-style: preserve-3d;
+  perspective: 500px;
+
+  cursor: pointer;
+  background: linear-gradient(white, rgb(169, 233, 238));
+  aspect-ratio: 7/9;
+  border-radius: 1px;
+}
+
+.game__card.picked,
+.game__card.matched {
+  transform: rotateY(180deg);
+}
+
+.game__card-front,
+.game__card-back {
+  display: block;
+  backface-visibility: hidden;
+}
+
+.game__card-front {
+  object-fit: contain;
+  width: calc(100% - var(--card-padding) * 2);
+  height: calc(100% - var(--card-padding) * 2);
+
+  position: absolute;
+  top: var(--card-padding);
+  left: var(--card-padding);
+  right: var(--card-padding);
+  bottom: var(--card-padding);
+
+  transform: rotateY(-180deg);
+}
+
+.game__card-back {
+  /* display: none; */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
 }
 
 /* блок поздравления и предложения сыграть */
 .game__congratulations {
   /* цвета для контраста и размеры для отрисовки */
   background: white;
-  max-width: 700px;
-  min-width: 600px;
-  min-height: 200px;
+  max-width: 600px;
+  max-height: 360px;
+
+  /* отступы для внутренней геометрии */
+  padding: 50px;
 
   /* выравнивание */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 18px;
+  gap: 40px;
 
   /* скрыть окно до конца игры */
-  visibility: hidden;
+  display: none;
 
   /* закруглить окно */
   border-radius: 2%;
@@ -64,13 +144,13 @@
   right: 0;
   top: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, .8);
+  background: rgba(0, 0, 0, 0.8);
   z-index: -1;
 }
 
 /* заголовок-текст поздравления */
 .game__congratulations-title {
-  margin: 30px 0 0;
+  margin: 0;
   font-size: 80px;
   text-align: center;
   color: #4d4d4d;
@@ -78,10 +158,9 @@
   letter-spacing: 2px;
 }
 
-
 /* кнопка рестарта */
 .game__restart {
-  margin: 30px auto 60px;
+  margin: 0 auto;
   padding: 20px 30px;
 
   border: 1px solid #222;
@@ -99,5 +178,3 @@
   background-image: linear-gradient(to top, #9890e3 0%, #b1f4cf 100%);
   color: black;
 }
-
-

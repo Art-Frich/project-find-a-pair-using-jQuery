@@ -4,5 +4,6 @@
   font-weight: 400;
   font-display: swap;
   src: 
+  /* если указать format - шрифт перестает работать... хз почему */
     url('./Caveat/Caveat-Regular.ttf');
 }
