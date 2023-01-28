@@ -117,7 +117,7 @@
     },
 
     cardClicked: function () {
-      // получаем объект - ссылку на Memory, по которому можно отслеживать состояние родителям. Не понимаю, почему бы для этого не использовать самого родителя... чтобы не писать Memory, а использовать сокращение?
+      // получаем объект - ссылку на Memory, по которому можно отслеживать состояние родителя. Не понимаю, почему бы для этого не использовать самого родителя... чтобы не писать Memory, а использовать сокращение?
       var _ = Memory;
       //получаем доступ к карточке, на которую нажал пользователь, это же html элемент получается?
       var $card = $(this);
@@ -126,19 +126,18 @@
       // "если карточка ещё не перевернута и мы не нажимаем на ту же самую карточку второй раз подряд" + мы не на паузе
       if (
         !_.paused &&
-        !$card.find(".game__card").hasClass("matched") &&
-        !$card.find(".game__card").hasClass("picked")
+        !$card.hasClass("matched") &&
+        !$card.hasClass("picked")
       ) {
         // переворачиваем выбранную карточку
-        $card.find(".game__card").addClass("picked");
+        $card.addClass("picked");
         //если мы перевернули только первую карточку
         if (!_.guess) {
           // для начала запомним ее
-          _.guess = $(this).attr("data-id");
+          _.guess = $card.attr("data-id");
           // "если мы перевернули вторую и она совпадает с первой" и мы не тыкаем по той же самой карточке, верно?
         } else if (
-          _.guess == $(this).attr("data-id") &&
-          !$(this).hasClass("picked")
+          _.guess == $card.attr("data-id")
         ) {
           // оставляем обе на поле и показываем анимацию совпадения
           // matched - класс угаданных пар
@@ -215,21 +214,6 @@
       var frag = '';
       //перебираем все карточки подряд
       this.$cards.each(function(k,v) {
-        //добавляем html-код для очередной карточки
-        // <div class="game__card">
-        //   <div class="game__card-inside">
-        //     <div class="game__card-front">
-        //       <img src="" alt="" />
-        //     </div>
-        //     <div class="game__card-back">
-        //       <img src="" alt="" />
-        //     </div>
-        //   </div>
-        // </div>
-
-        // frag += '<div class="game__card" data-id="' + v.id + '">< class="inside"">\<div class="front"><img src="' + v.img + '"\ alt="' + v.name + '" /></div>\ <div class="back"><img src="../images/overlay-cards.jpg"\ alt="Codepen" /></div></div>\</div>';
-
-
         // <div class="game__card">
       //       <img src="" alt="" />
       //       <img src="" alt="" />

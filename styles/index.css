@@ -50,39 +50,59 @@
   /* используем гриды для построения сетки карточек */
   display: grid;
   justify-content: center;
-  gap: 3vw;
+  align-content: center;
+  gap: 2vw;
+  /* делает сетку довольно адаптивной, но не позволяет центрировать строки, что было бы удобно в промежуточных значениях */
   grid-template-columns: repeat(auto-fit, minmax(120px, max-content));
 
-  /* эффект трехмерности */
-  /* cвойство говорит, что дочерние элементы могут быть в плоскости отлично от родительской */
+  -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
-  /* удаленность плоскости от пользователя */
-  perspective: 500px;
+  /* т.к. перспектива задана блоку в котором много карточек, для центрального ряда она почти не работает, но для верхнего и нижнего - выглядит соответственно, если бы смотрели с центра */
+  -webkit-perspective: 900;
+  perspective: 900;
+}
+
+@media screen and (max-width: 350px) {
+  .game__window {
+    width: calc(100% - 2 * 25px);
+    margin: 0 25px;
+  }
 }
 
 .game__card {
   position: relative;
   padding: 10px;
 
-  display: block;
-  transform-style: preserve-3d;
-  perspective: 500px;
-
   cursor: pointer;
   background: linear-gradient(white, rgb(169, 233, 238));
   aspect-ratio: 7/9;
-  border-radius: 1px;
+  border-radius: 10px;
+  /* transparent = прозрачный */
+  border: 2px solid transparent;
+
+  /* эффект трехмерности */
+  /* cвойство говорит, что дочерние элементы могут быть в плоскости отлично от родительской */
+  /* необходимо, чтобы срабатывал эффект backface-visibility */
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  -webkit-transition: .4s linear;
+  -o-transition: .4s linear;
+  transition: .4s linear;
 }
 
 .game__card.picked,
 .game__card.matched {
+  /* отвечает за показ обратной стороны */
+  /* тип, как только карточка выбрана, повернуть ее, а с обратной стороны в силу свойства backface-visibility & transform (-180deg) другая карточка */
   transform: rotateY(180deg);
 }
 
 .game__card-front,
 .game__card-back {
-  display: block;
+  /* обеспечивает невидимость обложки */
+  /* без этого свойства rotate будет работать относительно как зеркало, а не реальный поворот */
   backface-visibility: hidden;
+  display: block;
 }
 
 .game__card-front {
@@ -96,11 +116,12 @@
   right: var(--card-padding);
   bottom: var(--card-padding);
 
-  transform: rotateY(-180deg);
+  /* необходимо, чтобы когда переворачивалась обложка, появялся не просто фон, а фон с обратной стороной карточки */
+  /* тип карточка изначально перевернута на -180 относительно лицевой стороны */
+  transform: rotateY(180deg);
 }
 
 .game__card-back {
-  /* display: none; */
   position: absolute;
   top: 0;
   left: 0;
@@ -110,6 +131,9 @@
   object-fit: cover;
   width: 100%;
   height: 100%;
+
+  border-radius: 10px;
+  transform: rotateY(0deg);
 }
 
 /* блок поздравления и предложения сыграть */
@@ -163,7 +187,7 @@
   margin: 0 auto;
   padding: 20px 30px;
 
-  border: 1px solid #222;
+  border: 3px solid #222;
   background: linear-gradient(#4d4d4d, #222);
   border-radius: 3px;
   cursor: pointer;
