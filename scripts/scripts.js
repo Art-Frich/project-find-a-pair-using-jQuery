@@ -1,13 +1,8 @@
-// весь скрипт - одна большая функция
 (function () {
-  // карточки
-  var cards = [
+  const cards = [
     {
-      // название
       name: "php",
-      // адрес картинки
       img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/PHP-logo.svg/297px-PHP-logo.svg.png",
-      // порядковый номер пары
       id: 1,
     },
     {
@@ -68,116 +63,82 @@
     },
   ];
 
+  
   // объект с основной механикой игры
-  var Memory = {
-    // создаём карточки
-    // init - инициация создания объекта
+  const Memory = {
     init: function (cards) {
-      // начинается работа с jQuery: $ позволяет создать глобальную переменную
-      this.$game = $(".game__window");
+      // $(..) - ищем на страничке html элемент с этим классом
+      this.$game = $(".game__window"); 
       this.$congratulations = $(".game__congratulations");
       this.$restart = $(".game__restart");
-      // merge - метод jQuery, позволяет совершить слияние массивов, в нашем случае создает каждой карточке дубликат
-      this.cardsArray = $.merge(cards, cards);
-      // самописная функция перемешивания карточек
-      this.shuffleCards(this.cardsArray);
-      // "раскладываем" карты
-      this.setup();
+      this.cardsArray = $.merge(cards, cards); // merge - метод jQuery для слияния массивов => дублируем массив
+      this.shuffleCards(this.cardsArray); // самописная функция перемешивания карточек 
+      this.setup(); // самописная функция раскладки карт
     },
 
-    // прописываем функцию перемешивания карточек
+    // функция перемешивания карточек
     shuffleCards: function (cardsArray) {
       this.$cards = $(this.shuffle(this.cardsArray));
-    }, //не забывай о запятой, бро
-
-    //прописываем функцию раскладки карт
-    setup: function () {
-      // вроде как инициируем код с карточками для вставки на страничку...
-      this.html = this.buildHTML();
-      // добавляем инициированный код методом .html в элемент .game странички
-      this.$game.html(this.html);
-      // вроде бы прописываем обращение к пока не написанному селектору блока карточек
-      this.$memoryCards = $(".game__card");
-      // "на старте мы не ждем переворота второй карточки"
-      this.paused = false;
-      // "на старте у нас нет перевёрнутой первой карточки"
-      this.guess = null;
-      // "добавляем элементам на странице реакции на нажатия"
-      this.binding();
     },
 
-    //самописная функция реагирования на нажатия указанная выше
+    //функция раскладки карт
+    setup: function () {
+      this.html = this.buildHTML(); // самописаня функция генерации карточек
+      this.$game.html(this.html); 
+      this.$memoryCards = $(".game__card");
+      this.paused = false; // не ждём переворота второй карточки
+      this.guess = null; // пока что нет перевернутой первой карточки
+      this.binding(); // самописная функция навешивания обработчиков
+    },
+    
+    // навесить обработчики
     binding: function () {
-      //т.к. у нас только два интерактива на страничке: карточки и кнопка сброса игры, то прописать реакцию нужно только для них
-
-      // нажатие на карточку: вызов метода cardCliked
       this.$memoryCards.on("click", this.cardClicked);
-      //нажатие на кнопку перезапуска игры: применить .proxy, который к функции вызова this применит this.reset
-      this.$restart.on("click", $.proxy(this.reset, this));
+      this.$restart.on("click", $.proxy(this.reset, this)); // аналог bind
     },
 
     cardClicked: function () {
-      // получаем объект - ссылку на Memory, по которому можно отслеживать состояние родителя. Не понимаю, почему бы для этого не использовать самого родителя... чтобы не писать Memory, а использовать сокращение?
-      var _ = Memory;
-      //получаем доступ к карточке, на которую нажал пользователь, это же html элемент получается?
-      var $card = $(this);
-      //начинается логика =)
+      const $card = $(this); // выбрать карточку по которой произошёл клик
 
-      // "если карточка ещё не перевернута и мы не нажимаем на ту же самую карточку второй раз подряд" + мы не на паузе
-      if (
-        !_.paused &&
+      if ( // "если карточка ещё не перевернута и мы не нажимаем на ту же самую карточку второй раз подряд" + мы не на паузе
+        !Memory.paused &&
         !$card.hasClass("matched") &&
         !$card.hasClass("picked")
       ) {
-        // переворачиваем выбранную карточку
-        $card.addClass("picked");
-        //если мы перевернули только первую карточку
-        if (!_.guess) {
-          // для начала запомним ее
-          _.guess = $card.attr("data-id");
-          // "если мы перевернули вторую и она совпадает с первой" и мы не тыкаем по той же самой карточке, верно?
-        } else if (
-          _.guess == $card.attr("data-id")
+        $card.addClass("picked"); // переворачиваем выбранную карточку
+        if (!Memory.guess) { //если мы перевернули только первую карточку          
+          Memory.guess = $card.attr("data-id"); // для начала запомним ее
+        } else if ( // "если мы перевернули вторую и она совпадает с первой" и мы не тыкаем по той же самой карточке
+          Memory.guess == $card.attr("data-id")
         ) {
-          // оставляем обе на поле и показываем анимацию совпадения
-          // matched - класс угаданных пар
-          $(".picked").addClass("matched");
-          // не забываем обнулить служебную переменную
-          _.guess = null;
-          //если же вторая не совпадает с первой
-        } else {
-          //обнуляем служебную переменную
-          _.guess = null;
-          // включаем паузу - пока не выключим, ни одна карточка больше не нажмется и не будет переворачиваться
-          _.paused = true;
-          // ждем указанное время в мс и прячем карточки обратно
-          setTimeout(function () {
+          $(".picked").addClass("matched"); // оставляем обе на поле и показываем анимацию совпадения          
+          Memory.guess = null; // обнулить служебную переменную
+        } else { //если же вторая не совпадает с первой
+          Memory.guess = null;
+          Memory.paused = true; // включаем паузу
+          setTimeout(function () { // ждем указанное время в мс и прячем карточки обратно
             $(".picked").removeClass("picked");
             Memory.paused = false;
-          }, 600); //не забывай закрыть оператор, бро
+          }, 600);
         }
-        //проверка на корректность завершения игры
-        if ($(".matched").length == $(".game__card").length) {
-          //показываем победное сообщение
-          _.win();
+        if ($(".matched").length == $(".game__card").length) { // если все пары найдены
+          Memory.win(); //показываем победное сообщение
         }
       }
     },
 
     win: function () {
-      //ставим на паузу и запрещаем переворачивать карточки
       this.paused = true;
-      //плавно показываем окошко с поздравлением и предложением сыграть еще, скрывая (fadeOut = затухание) окно с игрой
+      //плавно показываем окошко с поздравлением и предложением сыграть еще, 
       setTimeout(function () {
         Memory.showModal();
-        Memory.$game.fadeOut();
+        Memory.$game.fadeOut(); // скрываем (fadeOut = затухание) окно с игрой
       }, 1000);
     },
 
     //делаем окно с поздравлением видимым
     showModal: function () {
-      //добавим плавности
-      this.$congratulations.show("slow");
+      this.$congratulations.show("slow"); //добавим плавности
     },
 
     //прячем окно с поздравлением
@@ -195,7 +156,7 @@
 
     // Тасование Фишера-Йетса https://bost.ocks.org/mike/shuffle/
     shuffle: function (array) {
-      var counter = array.length,
+      let counter = array.length,
         temp,
         index;
       while (counter > 0) {
@@ -208,17 +169,14 @@
       return array;
     },
 
-    //код добавления карточек на html страничку
     buildHTML: function() {
-      //сюда складывать HTML-код
-      var frag = '';
-      //перебираем все карточки подряд
+      let frag = '';
       this.$cards.each(function(k,v) {
-        // <div class="game__card">
-      //       <img src="" alt="" />
-      //       <img src="" alt="" />
-        // </div>
         frag += '<div class="game__card" data-id="' + v.id + '"><img class="game__card-front" src="' + v.img + '" alt="' + v.name + '" /><img class="game__card-back" src="./images/overlay-cards.jpg" alt="Codepen" /></div>';
+      // <div class="game__card">
+      //       <img src="" alt="" />
+      //       <img src="" alt="" />
+      // </div> - разметка выше
       })
 
       return frag ;
@@ -226,4 +184,4 @@
   };
 
   Memory.init(cards);
-})();//зачем эти две скобки в конце?
+})();
