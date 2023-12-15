@@ -1,5 +1,5 @@
 # Проект игры "Найди пару" на js
-### [Ссылка на проект](https://art-frich.github.io/project-find-a-pair/)
+### [Ссылка на проект](https://art-frich.github.io/project-find-a-pair-using-jQuery/)
 ### Описание
 Реализация всем известной игры по поиску парного игрового item-а.
 ### Дополнительная информация
